@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .form-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #mainContent {
+            display: none;
+        }
+        .id-card {
+            border: 1px solid #ccc;
+            width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="modal fade show" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">লগইন</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">ইউজারনেম</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">পাসওয়ার্ড</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">লগইন</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="container" id="mainContent">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">School Management System</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-danger" onclick="logout()">লগআউট</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Home Page -->
+        <div id="homePage">
+            <h1 class="text-center my-4">School Management System</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>School Details</h3>
+                    <div id="schoolDetails"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('schoolForm')">Add School Details</button>
+                </div>
+                <div class="col-md-6">
+                    <h3>Teachers Details</h3>
+                    <div id="teacherDetails"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('teacherForm')">Add Teacher</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h3>Students Details</h3>
+                    <div id="studentDetails"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('studentForm')">Add Student</button>
+                    <button class="btn btn-secondary mt-2" onclick="generateSeatPlan()">Generate Seat Plan</button>
+                </div>
+                <div class="col-md-6">
+                    <h3>Test Exam Results</h3>
+                    <div id="testResults"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('testResultForm')">Add Test Result</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h3>Annual Exam Results</h3>
+                    <div id="annualResults"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('annualResultForm')">Add Annual Result</button>
+                </div>
+                <div class="col-md-6">
+                    <h3>Student Fees</h3>
+                    <div id="feesDetails"></div>
+                    <button class="btn btn-primary mt-2" onclick="showSection('feesForm')">Add Fees Record</button>
+                    <button class="btn btn-warning mt-2" onclick="showUnpaidFees()">Show Unpaid Fees</button>
+                </div>
+            </div>
+        </div>
+        <!-- Forms -->
+        <div id="schoolForm" class="form-section" style="display: none;">
+            <h3>Add/Edit School Details</h3>
+            <form id="schoolDetailsForm">
+                <div class="mb-3">
+                    <label for="schoolName" class="form-label">School Name</label>
+                    <input type="text" class="form-control" id="schoolName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="schoolAddress" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="schoolAddress" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="studentForm" class="form-section" style="display: none;">
+            <h3>Add/Edit Student</h3>
+            <form id="studentDetailsForm">
+                <div class="mb-3">
+                    <label for="studentName" class="form-label">Student Name</label>
+                    <input type="text" class="form-control" id="studentName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentClass" class="form-label">Class</label>
+                    <input type="text" class="form-control" id="studentClass" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save & Generate ID Card</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="teacherForm" class="form-section" style="display: none;">
+            <h3>Add/Edit Teacher</h3>
+            <form id="teacherDetailsForm">
+                <div class="mb-3">
+                    <label for="teacherName" class="form-label">Teacher Name</label>
+                    <input type="text" class="form-control" id="teacherName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="teacherSubject" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save & Generate ID Card</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="testResultForm" class="form-section" style="display: none;">
+            <h3>Add/Edit Test Result</h3>
+            <form id="testResultDetailsForm">
+                <div class="mb-3">
+                    <label for="testStudentId" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="testStudentId" required>
+                </div>
+                <div class="mb-3">
+                    <label for="testSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="testSubject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="testMarks" class="form-label">Marks</label>
+                    <input type="number" class="form-control" id="testMarks" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="annualResultForm" class="form-section" style="display: none;">
+            <h3>Add/Edit Annual Result</h3>
+            <form id="annualResultDetailsForm">
+                <div class="mb-3">
+                    <label for="annualStudentId" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="annualStudentId" required>
+                </div>
+                <div class="mb-3">
+                    <label for="annualSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="annualSubject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="annualMarks" class="form-label">Marks</label>
+                    <input type="number" class="form-control" id="annualMarks" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="feesForm" class="form-section" style="display: none;">
+            <h3>Add/Edit Fees Record</h3>
+            <form id="feesDetailsForm">
+                <div class="mb-3">
+                    <label for="studentId" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="studentId" required>
+                </div>
+                <div class="mb-3">
+                    <label for="month" class="form-label">Month</label>
+                    <input type="text" class="form-control" id="month" required>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Payment Status</label>
+                    <select class="form-control" id="status" required>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+            </form>
+        </div>
+        <div id="seatPlan" class="form-section" style="display: none;">
+            <h3>Seat Plan</h3>
+            <div id="seatPlanDetails"></div>
+            <button type="button" class="btn btn-secondary" onclick="showSection('homePage')">Back</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Login
+        const validUsername = "PKGS";
+        const validPassword = "kst2k23@";
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            if (username === validUsername && password === validPassword) {
+                document.getElementById("mainContent").style.display = "block";
+                document.getElementById("loginModal").style.display = "none";
+            } else {
+                alert("ইউজারনেম বা পাসওয়ার্ড ভুল!");
+            }
+        });
+        // Logout
+        function logout() {
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("loginModal").style.display = "block";
+        }
+        // Show Section
+        function showSection(sectionId) {
+            document.querySelectorAll("#homePage, .form-section").forEach(section => {
+                section.style.display = "none";
+            });
+            document.getElementById(sectionId).style.display = "block";
+        }
+        // School Details
+        document.getElementById("schoolDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const schoolName = document.getElementById("schoolName").value;
+            const schoolAddress = document.getElementById("schoolAddress").value;
+            const schoolData = JSON.parse(localStorage.getItem("schoolData")) || [];
+            schoolData.push({ name: schoolName, address: schoolAddress });
+            localStorage.setItem("schoolData", JSON.stringify(schoolData));
+            displaySchoolDetails();
+            showSection("homePage");
+        });
+        function displaySchoolDetails() {
+            const schoolData = JSON.parse(localStorage.getItem("schoolData")) || [];
+            const schoolDetails = document.getElementById("schoolDetails");
+            schoolDetails.innerHTML = schoolData.map((school, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${school.name}</h5>
+                        <p class="card-text">${school.address}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSchool(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteSchool(index) {
+            const schoolData = JSON.parse(localStorage.getItem("schoolData")) || [];
+            schoolData.splice(index, 1);
+            localStorage.setItem("schoolData", JSON.stringify(schoolData));
+            displaySchoolDetails();
+        }
+        // Student Details
+        document.getElementById("studentDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const studentName = document.getElementById("studentName").value;
+            const studentClass = document.getElementById("studentClass").value;
+            const studentData = JSON.parse(localStorage.getItem("studentData")) || [];
+            const studentId = "STU" + (studentData.length + 1).toString().padStart(3, "0");
+            studentData.push({ id: studentId, name: studentName, class: studentClass });
+            localStorage.setItem("studentData", JSON.stringify(studentData));
+            generateStudentIDCard({ id: studentId, name: studentName, class: studentClass });
+            displayStudentDetails();
+            showSection("homePage");
+        });
+        function displayStudentDetails() {
+            const studentData = JSON.parse(localStorage.getItem("studentData")) || [];
+            const studentDetails = document.getElementById("studentDetails");
+            studentDetails.innerHTML = studentData.map((student, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${student.name}</h5>
+                        <p class="card-text">ID: ${student.id}, Class: ${student.class}</p>
+                        <button class="btn btn-primary btn-sm" onclick="generateStudentIDCard(${JSON.stringify(student)})">Generate ID Card</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteStudent(index) {
+            const studentData = JSON.parse(localStorage.getItem("studentData")) || [];
+            studentData.splice(index, 1);
+            localStorage.setItem("studentData", JSON.stringify(studentData));
+            displayStudentDetails();
+        }
+        function generateStudentIDCard(student) {
+            const idCardWindow = window.open("", "_blank");
+            idCardWindow.document.write(`
+                <html>
+                <head><title>Student ID Card</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; }
+                    .id-card { border: 1px solid #ccc; width: 300px; margin: 20px auto; padding: 20px; }
+                </style>
+                </head>
+                <body>
+                    <div class="id-card">
+                        <h2>Student ID Card</h2>
+                        <p><strong>ID:</strong> ${student.id}</p>
+                        <p><strong>Name:</strong> ${student.name}</p>
+                        <p><strong>Class:</strong> ${student.class}</p>
+                        <button onclick="window.print()">Print ID Card</button>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+        // Teacher Details
+        document.getElementById("teacherDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const teacherName = document.getElementById("teacherName").value;
+            const teacherSubject = document.getElementById("teacherSubject").value;
+            const teacherData = JSON.parse(localStorage.getItem("teacherData")) || [];
+            const teacherId = "TCH" + (teacherData.length + 1).toString().padStart(3, "0");
+            teacherData.push({ id: teacherId, name: teacherName, subject: teacherSubject });
+            localStorage.setItem("teacherData", JSON.stringify(teacherData));
+            generateTeacherIDCard({ id: teacherId, name: teacherName, subject: teacherSubject });
+            displayTeacherDetails();
+            showSection("homePage");
+        });
+        function displayTeacherDetails() {
+            const teacherData = JSON.parse(localStorage.getItem("teacherData")) || [];
+            const teacherDetails = document.getElementById("teacherDetails");
+            teacherDetails.innerHTML = teacherData.map((teacher, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${teacher.name}</h5>
+                        <p class="card-text">ID: ${teacher.id}, Subject: ${teacher.subject}</p>
+                        <button class="btn btn-primary btn-sm" onclick="generateTeacherIDCard(${JSON.stringify(teacher)})">Generate ID Card</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTeacher(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteTeacher(index) {
+            const teacherData = JSON.parse(localStorage.getItem("teacherData")) || [];
+            teacherData.splice(index, 1);
+            localStorage.setItem("teacherData", JSON.stringify(teacherData));
+            displayTeacherDetails();
+        }
+        function generateTeacherIDCard(teacher) {
+            const idCardWindow = window.open("", "_blank");
+            idCardWindow.document.write(`
+                <html>
+                <head><title>Teacher ID Card</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; }
+                    .id-card { border: 1px solid #ccc; width: 300px; margin: 20px auto; padding: 20px; }
+                </style>
+                </head>
+                <body>
+                    <div class="id-card">
+                        <h2>Teacher ID Card</h2>
+                        <p><strong>ID:</strong> ${teacher.id}</p>
+                        <p><strong>Name:</strong> ${teacher.name}</p>
+                        <p><strong>Subject:</strong> ${teacher.subject}</p>
+                        <button onclick="window.print()">Print ID Card</button>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+        // Test Result
+        document.getElementById("testResultDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const studentId = document.getElementById("testStudentId").value;
+            const subject = document.getElementById("testSubject").value;
+            const marks = document.getElementById("testMarks").value;
+            const testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+            testResults.push({ studentId, subject, marks });
+            localStorage.setItem("testResults", JSON.stringify(testResults));
+            displayTestResults();
+            showSection("homePage");
+        });
+        function displayTestResults() {
+            const testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+            const testDetails = document.getElementById("testResults");
+            testDetails.innerHTML = testResults.map((result, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Student ID: ${result.studentId}</h5>
+                        <p class="card-text">Subject: ${result.subject}, Marks: ${result.marks}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTestResult(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteTestResult(index) {
+            const testResults = JSON.parse(localStorage.getItem("testResults")) || [];
+            testResults.splice(index, 1);
+            localStorage.setItem("testResults", JSON.stringify(testResults));
+            displayTestResults();
+        }
+        // Annual Result
+        document.getElementById("annualResultDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const studentId = document.getElementById("annualStudentId").value;
+            const subject = document.getElementById("annualSubject").value;
+            const marks = document.getElementById("annualMarks").value;
+            const annualResults = JSON.parse(localStorage.getItem("annualResults")) || [];
+            annualResults.push({ studentId, subject, marks });
+            localStorage.setItem("annualResults", JSON.stringify(annualResults));
+            displayAnnualResults();
+            showSection("homePage");
+        });
+        function displayAnnualResults() {
+            const annualResults = JSON.parse(localStorage.getItem("annualResults")) || [];
+            const annualDetails = document.getElementById("annualResults");
+            annualDetails.innerHTML = annualResults.map((result, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Student ID: ${result.studentId}</h5>
+                        <p class="card-text">Subject: ${result.subject}, Marks: ${result.marks}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteAnnualResult(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteAnnualResult(index) {
+            const annualResults = JSON.parse(localStorage.getItem("annualResults")) || [];
+            annualResults.splice(index, 1);
+            localStorage.setItem("annualResults", JSON.stringify(annualResults));
+            displayAnnualResults();
+        }
+        // Fees Record
+        document.getElementById("feesDetailsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const studentId = document.getElementById("studentId").value;
+            const month = document.getElementById("month").value;
+            const status = document.getElementById("status").value;
+            const feesData = JSON.parse(localStorage.getItem("feesData")) || [];
+            feesData.push({ studentId, month, status });
+            localStorage.setItem("feesData", JSON.stringify(feesData));
+            displayFeesDetails();
+            showSection("homePage");
+        });
+        function displayFeesDetails() {
+            const feesData = JSON.parse(localStorage.getItem("feesData")) || [];
+            const feesDetails = document.getElementById("feesDetails");
+            feesDetails.innerHTML = feesData.map((fee, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Student ID: ${fee.studentId}</h5>
+                        <p class="card-text">Month: ${fee.month}, Status: ${fee.status}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFee(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        function deleteFee(index) {
+            const feesData = JSON.parse(localStorage.getItem("feesData")) || [];
+            feesData.splice(index, 1);
+            localStorage.setItem("feesData", JSON.stringify(feesData));
+            displayFeesDetails();
+        }
+        function showUnpaidFees() {
+            const feesData = JSON.parse(localStorage.getItem("feesData")) || [];
+            const unpaidFees = feesData.filter(fee => fee.status === "Unpaid");
+            const feesDetails = document.getElementById("feesDetails");
+            feesDetails.innerHTML = unpaidFees.map((fee, index) => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Student ID: ${fee.studentId}</h5>
+                        <p class="card-text">Month: ${fee.month}, Status: ${fee.status}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFee(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        // Seat Plan
+        function generateSeatPlan() {
+            const studentData = JSON.parse(localStorage.getItem("studentData")) || [];
+            const seatPlan = studentData.map((student, index) => ({
+                id: student.id,
+                name: student.name,
+                seat: index + 1
+            }));
+            const seatPlanDetails = document.getElementById("seatPlanDetails");
+            seatPlanDetails.innerHTML = seatPlan.map(seat => `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${seat.name}</h5>
+                        <p class="card-text">ID: ${seat.id}, Seat: ${seat.seat}</p>
+                    </div>
+                </div>
+            `).join("");
+            showSection("seatPlan");
+        }
+        // Initialize
+        displaySchoolDetails();
+        displayStudentDetails();
+        displayTeacherDetails();
+        displayTestResults();
+        displayAnnualResults();
+        displayFeesDetails();
+    </script>
+</body>
+</html>
